@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useHistory, withRouter } from "react-router-dom";
 
 function EntryForm() {
@@ -8,12 +8,14 @@ function EntryForm() {
   const [job, setJob] = useState("プログラマー");
   const [reason, setReason] = useState("");
   const history = useHistory();
-  const test = () => {
+  const handleClickRouting = () => {
     history.push({
       pathname: "/Confirmation",
-      state: { text: name },
+      state: { name: name, email: email, age: age, job: job, reason: reason },
     });
   };
+
+  const unCreatavle = name === "" || email === "" || reason === "";
 
   return (
     <div>
@@ -76,7 +78,9 @@ function EntryForm() {
         value={reason}
         onChange={(e) => setReason(e.target.value)}
       />
-      <button onClick={test}>送信</button>
+      <button onClick={handleClickRouting} disabled={unCreatavle}>
+        確認画面へ
+      </button>
     </div>
   );
 }
