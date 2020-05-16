@@ -1,22 +1,40 @@
 import React, { useState } from "react";
-import { useHistory, withRouter } from "react-router-dom";
-
-function EntryForm() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [age, setAge] = useState(15);
-  const [job, setJob] = useState("プログラマー");
-  const [reason, setReason] = useState("");
+import { useHistory, withRouter, useLocation } from "react-router-dom";
+import firebase from "firebase/app";
+import "firebase/firestore";
+function Detail() {
+  const location = useLocation();
   const history = useHistory();
-  const ConfirmationRouting = () => {
+  const [name, setName] = useState(location.state.name);
+  const [email, setEmail] = useState(location.state.email);
+  const [age, setAge] = useState(location.state.age);
+  const [job, setJob] = useState(location.state.job);
+  const [reason, setReason] = useState(location.state.reason);
+  const [stetus, setStetus] = useState(location.state.stetus);
+  const [docId] = useState(location.state.docId);
+  const db = firebase.firestore();
+
+  const handleClickDUpdete = () => {
+    const userRef = db.collection("EntryDate").doc(docId);
+    userRef.update({
+      docId: docId,
+      name: name,
+      email: email,
+      age: age,
+      job: job,
+      reason: reason,
+      status: stetus,
+    });
     history.push({
-      pathname: "/Confirmation",
-      state: { name: name, email: email, age: age, job: job, reason: reason },
+      pathname: "/Management",
     });
   };
-  const LoginRouting = () => {
+  const handleClickDelete = () => {
+    db.collection("EntryDate").doc(docId).delete();
+  };
+  const ManagementRouting = () => {
     history.push({
-      pathname: "/Login",
+      pathname: "/Management",
     });
   };
 
@@ -24,7 +42,7 @@ function EntryForm() {
 
   return (
     <div>
-      <h4>エントリー画面</h4>
+      <h4>詳細画面</h4>
       <label htmlFor="exampleInputTitle">名前</label>
 
       <input
@@ -83,18 +101,34 @@ function EntryForm() {
         value={reason}
         onChange={(e) => setReason(e.target.value)}
       />
+      <label htmlFor="exampleInputStetus">ステータス</label>
+
+      <select
+        value={stetus}
+        onChange={(e) => setStetus(e.target.value)}
+        className="custom-select"
+        id="exampleInputStetus"
+      >
+        <option value="未対応">未対応</option>
+        <option value="対応済み">対応ずみ</option>
+      </select>
+
       <button
+        onClick={handleClickDUpdete}
         className="btn btn-primary"
-        onClick={ConfirmationRouting}
         disabled={unCreatavle}
       >
-        確認画面へ
+        更新
       </button>
-      <button className="btn btn-info" onClick={LoginRouting}>
-        ログイン画面へ
+
+      <button className="btn btn-danger" onClick={handleClickDelete}>
+        削除
+      </button>
+      <button className="btn btn-info" onClick={ManagementRouting}>
+        戻る
       </button>
     </div>
   );
 }
 
-export default withRouter(EntryForm);
+export default withRouter(Detail);

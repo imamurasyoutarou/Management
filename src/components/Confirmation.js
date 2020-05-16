@@ -2,12 +2,13 @@ import React, { useEffect } from "react";
 import { useLocation, useHistory } from "react-router-dom";
 import * as firebase from "firebase/app";
 import "firebase/firestore";
+import { timeCurrentIso8601 } from "../utils";
 // require("firebase/functions");
 
 const Confirmation = () => {
   const location = useLocation();
   const history = useHistory();
-  var db = firebase.firestore();
+  const db = firebase.firestore();
   const { name, email, age, job, reason } = location.state;
 
   useEffect(() => {
@@ -19,12 +20,16 @@ const Confirmation = () => {
   });
 
   const firestoreAdd = () => {
-    db.collection("EntryDate").doc("Data").set({
+    const docId = db.collection("EntryDate").doc().id;
+    db.collection("EntryDate").doc(docId).set({
+      docId: docId,
       name: name,
       email: email,
       age: age,
       job: job,
       reason: reason,
+      time: timeCurrentIso8601(),
+      status: "未対応",
     });
   };
 
@@ -41,10 +46,14 @@ const Confirmation = () => {
   const hadleClickButton = () => {
     firestoreAdd();
     mailFnction();
+    history.push({
+      pathname: "/",
+    });
   };
 
   return (
     <div>
+      <h4>確認画面</h4>
       <table className="table table-bordered">
         <thead>
           <tr>
@@ -76,7 +85,9 @@ const Confirmation = () => {
           </tr>
         </tbody>
       </table>
-      <button onClick={hadleClickButton}>送信</button>
+      <button className="btn btn-primary" onClick={hadleClickButton}>
+        送信
+      </button>
     </div>
   );
 };
