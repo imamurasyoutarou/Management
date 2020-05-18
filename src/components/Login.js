@@ -2,16 +2,27 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import firebase from "firebase/app";
 import "firebase/auth";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
-const Login = () => {
-  const [email, SetEmail] = useState("");
-  const [password, SetPassword] = useState("");
+function Login() {
   const history = useHistory();
+  const initialValues = {
+    email: "",
+    password: "",
+  };
+
+  const validationSchema = Yup.object({
+    email: Yup.string()
+      .email("メールの方式で入力してください")
+      .required("入力必須です"),
+    password: Yup.string().required("必須入力です"),
+  });
 
   const hadleClickLoginCheck = () => {
     firebase
       .auth()
-      .signInWithEmailAndPassword(email, password)
+      .signInWithEmailAndPassword(formik.values.email, formik.values.password)
       .then(() => {
         history.push({
           pathname: "/Management",
@@ -22,34 +33,47 @@ const Login = () => {
       });
   };
 
-  const unCreatavle = email === "" || password === "";
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+  });
+
   return (
-    <div>
-      <h4>ログイン画面</h4>
-      <label htmlFor="exampleInputEmail">Email</label>
-
+    <form onSubmit={formik.handleSubmit}>
+      <label htmlFor="email">E-mail</label>
       <input
+        type="email"
+        id="email"
+        name="email"
         className="form-control"
-        id="exampleInputEmail"
-        defaultValue={email}
-        onChange={(e) => SetEmail(e.target.value)}
+        onBlur={formik.handleBlur}
+        onChange={formik.handleChange}
+        value={formik.values.email}
       />
-      <label htmlFor="exampleInputEmail">Password</label>
+      {formik.touched.email && formik.errors.email ? (
+        <p className="error">{formik.errors.email}</p>
+      ) : null}
 
+      <label htmlFor="name">Password</label>
       <input
+        type="text"
+        id="password"
+        name="password"
         className="form-control"
-        id="exampleInputEmail"
-        defaultValue={password}
-        onChange={(e) => SetPassword(e.target.value)}
+        onBlur={formik.handleBlur}
+        onChange={formik.handleChange}
+        value={formik.values.password}
       />
-      <button
-        className="btn btn-primary"
-        disabled={unCreatavle}
-        onClick={hadleClickLoginCheck}
-      >
+
+      {formik.touched.password && formik.errors.password ? (
+        <p className="error">{formik.errors.password}</p>
+      ) : null}
+
+      <button className="btn btn-primary" onClick={hadleClickLoginCheck}>
         ログイン
       </button>
-    </div>
+    </form>
   );
-};
+}
+
 export default Login;
