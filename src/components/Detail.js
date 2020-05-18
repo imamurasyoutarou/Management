@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { useHistory, withRouter, useLocation } from "react-router-dom";
 import firebase from "firebase/app";
 import "firebase/firestore";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 function Detail() {
   const location = useLocation();
   const history = useHistory();
   const [name, setName] = useState(location.state.name);
-  const [email, setEmail] = useState(location.state.email);
   const [age, setAge] = useState(location.state.age);
   const [job, setJob] = useState(location.state.job);
   const [reason, setReason] = useState(location.state.reason);
@@ -14,12 +15,29 @@ function Detail() {
   const [docId] = useState(location.state.docId);
   const db = firebase.firestore();
 
+  const initialValues = {
+    email: location.state.email,
+  };
+
+  const validationSchema = Yup.object({
+    email: Yup.string().email("メールの方式で入力してください"),
+  });
+  const onSubmit = (values) => {
+    console.log("Form data", values);
+  };
+
+  const formik = useFormik({
+    initialValues,
+    onSubmit,
+    validationSchema,
+  });
+
   const handleClickDUpdete = () => {
     const userRef = db.collection("EntryDate").doc(docId);
     userRef.update({
       docId: docId,
       name: name,
-      email: email,
+      email: formik.values.email,
       age: age,
       job: job,
       reason: reason,
@@ -38,10 +56,11 @@ function Detail() {
     });
   };
 
-  const unCreatavle = name === "" || email === "" || reason === "";
+  const unCreatavle =
+    name === "" || formik.values.email === "" || reason === "";
 
   return (
-    <div>
+    <form onSubmit={formik.handleSubmit}>
       <h4>詳細画面</h4>
       <label htmlFor="exampleInputTitle">名前</label>
 
@@ -54,11 +73,18 @@ function Detail() {
       <label htmlFor="exampleInputEmail">Email</label>
 
       <input
-        className="form-control"
+        type="email"
         id="exampleInputEmail"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
+        name="email"
+        className="form-control"
+        onBlur={formik.handleBlur}
+        onChange={formik.handleChange}
+        value={formik.values.email}
       />
+
+      {formik.touched.email && formik.errors.email ? (
+        <p className="error">{formik.errors.email}</p>
+      ) : null}
 
       <label htmlFor="GroupSelectAge">年齢</label>
       {(() => {
@@ -127,7 +153,7 @@ function Detail() {
       <button className="btn btn-info" onClick={ManagementRouting}>
         戻る
       </button>
-    </div>
+    </form>
   );
 }
 

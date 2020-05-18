@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
 import firebase from "firebase/app";
 import "firebase/auth";
@@ -32,11 +32,17 @@ function Login() {
         alert("ログイン情報が違います");
       });
   };
+  const onSubmit = (values) => {
+    console.log("Form data", values);
+  };
 
   const formik = useFormik({
     initialValues,
+    onSubmit,
     validationSchema,
   });
+  const unCreatavle =
+    formik.values.email === "" || formik.values.password === "";
 
   return (
     <form onSubmit={formik.handleSubmit}>
@@ -56,7 +62,7 @@ function Login() {
 
       <label htmlFor="name">Password</label>
       <input
-        type="text"
+        type="password"
         id="password"
         name="password"
         className="form-control"
@@ -69,7 +75,11 @@ function Login() {
         <p className="error">{formik.errors.password}</p>
       ) : null}
 
-      <button className="btn btn-primary" onClick={hadleClickLoginCheck}>
+      <button
+        disabled={unCreatavle}
+        className="btn btn-primary"
+        onClick={hadleClickLoginCheck}
+      >
         ログイン
       </button>
     </form>

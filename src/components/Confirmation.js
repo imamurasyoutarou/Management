@@ -3,7 +3,7 @@ import { useLocation, useHistory } from "react-router-dom";
 import * as firebase from "firebase/app";
 import "firebase/firestore";
 import { timeCurrentIso8601 } from "../utils";
-// require("firebase/functions");
+require("firebase/functions");
 
 const Confirmation = () => {
   const location = useLocation();
@@ -34,21 +34,22 @@ const Confirmation = () => {
   };
 
   const mailFnction = () => {
-    let data = {};
-    data.name = name;
-    data.email = email;
-    data.content = reason;
+    let data = {
+      name: name,
+      email: email,
+      content: reason,
+    };
 
-    // let sendMail = firebase.functions().httpsCallable("sendMail");
-    // sendMail(data);
+    let sendMail = firebase.functions().httpsCallable("sendMail");
+    sendMail(data);
   };
 
   const hadleClickButton = () => {
-    firestoreAdd();
+    // firestoreAdd();
     mailFnction();
-    history.push({
-      pathname: "/",
-    });
+    // history.push({
+    //   pathname: "/",
+    // });
   };
 
   return (
@@ -57,7 +58,7 @@ const Confirmation = () => {
       <table className="table table-bordered">
         <thead>
           <tr>
-            <th colSpan="2" scope="col">
+            <th colSpan={2} scope="col">
               エントリー情報
             </th>
           </tr>
