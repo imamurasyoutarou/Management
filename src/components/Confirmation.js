@@ -37,7 +37,9 @@ const Confirmation = () => {
     let data = {
       name: name,
       email: email,
-      content: reason,
+      age: age,
+      job: job,
+      reason: reason,
     };
 
     let sendMail = firebase.functions().httpsCallable("sendMail");

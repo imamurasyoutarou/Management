@@ -1,30 +1,36 @@
 const functions = require("firebase-functions");
 const nodemailer = require("nodemailer");
-const gmailEmail = "syoutarouimamura@gmailEmail.com";
+const gmailEmail = "syoutarouimamura@gmail.com";
 const gmailPassword = "Imasyou718";
-const adminEmail = "syoutarouimamura@gmailEmail.com";
+const adminEmail = "syoutarouimamura@gmail.com";
 
 // 送信に使用するメールサーバーの設定
 const mailTransport = nodemailer.createTransport({
   service: "gmail",
+  secure: false,
+  port: 25,
   auth: {
     user: gmailEmail,
     pass: gmailPassword,
+  },
+  tls: {
+    rejectUnauthorized: false,
   },
 });
 
 // 管理者用のメールテンプレート
 const adminContents = (data) => {
   return `以下内容でホームページよりお問い合わせを受けました。
-
 お名前：
 ${data.name}
-
 メールアドレス：
 ${data.email}
-
-内容：
-${data.contents}
+年齢
+${data.age}
+希望職種 
+${data.job}
+希望理由：
+${data.reason}
 `;
 };
 
