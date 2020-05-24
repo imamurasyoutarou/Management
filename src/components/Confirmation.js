@@ -47,11 +47,11 @@ const Confirmation = () => {
   };
 
   const hadleClickButton = () => {
-    // firestoreAdd();
+    firestoreAdd();
     mailFnction();
-    // history.push({
-    //   pathname: "/",
-    // });
+    history.push({
+      pathname: "/",
+    });
   };
 
   return (
